@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Sign the data on the stdin, write detached signature to the stdout.
+
+usage() {
+    echo "Usage: ${0} <data>"
+    echo "a <data>.sig will be created"
+    exit 1
+}
+
+if [ $# -ne 1 ]
+then
+    usage
+fi
+
+openssl11 \
+    cms \
+    -sign \
+    -outform DER \
+    -binary \
+    -md sha256 \
+    -noattr \
+    -nosmimecap \
+    -signer "certs/signer.pem" \
+    -inkey "keys/signer.pem" \
+    -in "${1}" \
+    -out "${1}.sig"

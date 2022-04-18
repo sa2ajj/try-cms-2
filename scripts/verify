@@ -1,0 +1,21 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: ${0} data"
+    exit 1
+}
+
+if [ $# -ne 1 ]
+then
+    usage
+fi
+
+openssl11 \
+    cms \
+    -verify \
+    -binary \
+    -content "${1}" \
+    -in "${1}.sig" \
+    -inform DER \
+    -CAfile "certs/root.pem" \
+    -out /dev/null

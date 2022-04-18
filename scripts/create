@@ -1,0 +1,71 @@
+#! /bin/bash
+
+re_create() {
+    local dirname="$1"
+
+    rm -rf "${dirname}"
+    mkdir "${dirname}"
+}
+
+prefix="/C=FI/O=Little Experiment"
+certs="${PWD}/certs"
+conf="${PWD}/conf"
+keys="${PWD}/keys"
+
+export DIR_INTERNALS="${PWD}/internals"
+
+re_create "${DIR_INTERNALS}"
+re_create "${keys}"
+re_create "${certs}"
+
+# initialise
+touch ${DIR_INTERNALS}/index.txt
+echo "01" > ${DIR_INTERNALS}/serial
+
+
+# generate new EC private keys
+for name in root signer
+do
+    openssl11 \
+        ecparam \
+        -genkey \
+        -out "${keys}/${name}.pem" \
+        -name prime256v1
+done
+
+openssl11 \
+    req \
+    -config "${conf}/root-ca.conf" \
+    -x509 \
+    -key "${keys}/root.pem" \
+    -out "${certs}/root.pem" \
+    -sha256 \
+    -subj "${prefix}/CN=Root CA" \
+    -days 365
+
+openssl11 \
+    req \
+    -config "${conf}/csr-signing.conf" \
+    -new \
+    -key "${keys}/signer.pem" \
+    -out "${certs}/signer.csr" \
+    -sha256 \
+    -subj "${prefix}/CN=Signer" \
+
+openssl11 \
+    ca \
+    -config "${conf}/ca-signing.conf" \
+    -batch \
+    -keyfile "${keys}/root.pem" \
+    -cert "${certs}/root.pem" \
+    -days 20 \
+    -md sha256 \
+    -in "${certs}/signer.csr" \
+    -out "${certs}/signer.pem"
+
+# check that we created a verifiable chain
+openssl11 \
+    verify \
+    -verbose \
+    -CAfile "${certs}/root.pem" \
+    "${certs}/signer.pem"
