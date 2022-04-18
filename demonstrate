@@ -5,3 +5,10 @@ scripts/create
 scripts/sign "$0"
 
 scripts/verify "$0"
+
+cargo build --release
+
+target/release/try-cms-2 \
+    certs/root.pem \
+    "$0" \
+    certs/signer.pem
