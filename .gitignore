@@ -1,4 +1,7 @@
+*.sig
+
 /certs
 /keys
 /internals
+
 /target
