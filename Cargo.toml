@@ -1,0 +1,32 @@
+[package]
+name = "try-cms-2"
+authors = [
+    "Mikhail Sobolev <mikhail.sobolev@gmail.com>"
+]
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.anyhow]
+version = "1.0"
+
+[dependencies.hex]
+version = "0.4.3"
+default-features = false
+
+[dependencies.pem]
+version = "1.0"
+default-features = false
+
+[dependencies.ring]
+version = "*"
+default-features = false
+
+[dependencies.cryptographic-message-syntax]
+version = "*"
+default-features = false
+
+[dependencies.x509-certificate]
+version = "*"
+default-features = false
